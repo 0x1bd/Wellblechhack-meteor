@@ -10,9 +10,11 @@ import meteordevelopment.meteorclient.events.meteor.KeyEvent;
 import meteordevelopment.meteorclient.events.meteor.MouseButtonEvent;
 import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
+import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.misc.input.KeyAction;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
+import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -31,12 +33,13 @@ public class Scripts extends System<Scripts> implements Iterable<Script> {
         return Systems.get(Scripts.class);
     }
 
+    public File DIRECTORY = new File(MeteorClient.FOLDER, "scripts");
+
     @Override
     public void init() {
-        File scriptsFolder = new File(MeteorClient.FOLDER, "scripts");
-        scriptsFolder.mkdir();
+        DIRECTORY.mkdir();
 
-        File[] files = scriptsFolder.listFiles();
+        File[] files = DIRECTORY.listFiles();
         if (files == null) return;
 
         for (File file : files) {
@@ -96,5 +99,21 @@ public class Scripts extends System<Scripts> implements Iterable<Script> {
     @Override
     public @NotNull Iterator<Script> iterator() {
         return scripts.iterator();
+    }
+
+    @Override
+    public NbtCompound toTag() {
+        NbtCompound tag = new NbtCompound();
+
+        tag.put("scripts", NbtUtils.listToTag(scripts));
+
+        return tag;
+    }
+
+    @Override
+    public Scripts fromTag(NbtCompound tag) {
+        scripts = NbtUtils.listFromTag(tag.getList("scripts", 10), Script::new);
+
+        return this;
     }
 }

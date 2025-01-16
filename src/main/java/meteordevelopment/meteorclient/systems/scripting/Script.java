@@ -5,6 +5,7 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Colors;
 
 import javax.script.ScriptEngine;
@@ -41,6 +42,11 @@ public class Script implements ISerializable<Script> {
         name.set(file.getName());
     }
 
+    public Script(NbtElement tag) {
+        fromTag((NbtCompound) tag);
+        file = new File(Scripts.get().DIRECTORY, name.get());
+    }
+
     public boolean onAction(boolean isKey, int value, int modifiers) {
         if (!keybind.get().matches(isKey, value, modifiers)) return false;
         return onAction();
@@ -56,7 +62,11 @@ public class Script implements ISerializable<Script> {
         MeteorClient.LOG.info("Loaded script: {}", file.getName());
     }
 
-    private ScriptingStandardLibrary stdLib = new ScriptingStandardLibrary();
+    public void load() {
+        load(new File(Scripts.get().DIRECTORY, name.get()));
+    }
+
+    private final ScriptingStandardLibrary stdLib = new ScriptingStandardLibrary();
 
     public void run() {
         if (file == null) {

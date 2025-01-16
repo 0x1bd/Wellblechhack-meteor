@@ -150,12 +150,11 @@ public class ScriptsTab extends Tab {
                         if (script.equals(p)) return;
                     }
 
-                    File scriptsFolder = new File(MeteorClient.FOLDER, "scripts");
-                    script.load(new File(scriptsFolder, script.name.get() + ".kts"));
+                    script.load();
                     if (!script.file.exists()) {
                         try {
                             script.file.createNewFile();
-                            Files.write(script.file.toPath(), "info(\"Hello, World!\")".getBytes(StandardCharsets.UTF_8));
+                            Files.write(script.file.toPath(), "wbh.info(\"Hello, World!\")".getBytes(StandardCharsets.UTF_8));
                         } catch (IOException e) {
                             MeteorClient.LOG.error("Failed to create script file {}", String.valueOf(e));
                         }
