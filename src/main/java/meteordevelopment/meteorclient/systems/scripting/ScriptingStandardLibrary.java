@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.systems.scripting;
 
 import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.utils.player.SlotUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.*;
@@ -83,7 +84,7 @@ public class ScriptingStandardLibrary {
         MinecraftClient.getInstance().interactionManager
             .clickSlot(
                 MinecraftClient.getInstance().player.currentScreenHandler.syncId,
-                slot,
+                SlotUtils.indexToId(slot),
                 button,
                 SlotActionType.PICKUP,
                 MinecraftClient.getInstance().player
@@ -106,8 +107,8 @@ public class ScriptingStandardLibrary {
             replaceAction.run();
         }
 
-        click(sourceSlot, 0);
-        click(destinationSlot, 0);
+        click(SlotUtils.indexToId(sourceSlot), 0);
+        click(SlotUtils.indexToId(destinationSlot), 0);
 
         if (simulate) {
             client.player.networkHandler.sendPacket(new CloseHandledScreenC2SPacket(client.player.playerScreenHandler.syncId));
@@ -121,7 +122,7 @@ public class ScriptingStandardLibrary {
 
         Objects.requireNonNull(client.interactionManager).clickSlot(
             client.player.currentScreenHandler.syncId,
-            slot,
+            SlotUtils.indexToId(slot),
             0,
             SlotActionType.THROW,
             client.player
@@ -154,6 +155,14 @@ public class ScriptingStandardLibrary {
 
     public int getItemMaxDamage(ItemStack stack) {
         return stack.getMaxDamage();
+    }
+
+    public ItemStack getPlayerItem(int slot) {
+        return MinecraftClient.getInstance().player.getInventory().getStack(slot);
+    }
+
+    public ItemStack getContainerItem(int slot) {
+        return MinecraftClient.getInstance().player.currentScreenHandler.slots.get(slot).getStack();
     }
 
     public void delay(long duration) throws InterruptedException {
