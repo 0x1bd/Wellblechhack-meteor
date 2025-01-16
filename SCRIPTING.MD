@@ -11,84 +11,88 @@ The `ScriptingStandardLibrary` provides a set of utility functions for interacti
 ### Logging
 - **`info(message: String)`**
   Logs an informational message to the console.
-  Example: `info("Hello, World!")`
+  Example: `wbh.info("Hello, World!")`
 
 - **`warn(message: String)`**
   Logs a warning message to the console.
-  Example: `warn("This is a warning!")`
+  Example: `wbh.warn("This is a warning!")`
 
 - **`error(message: String)`**
   Logs an error message to the console.
-  Example: `error("Something went wrong!")`
+  Example: `wbh.error("Something went wrong!")`
 
 ### In-Game Feedback
 - **`feedback(message: String)`**
   Displays a message in the in-game chat HUD.
-  Example: `feedback("Script executed successfully!")`
+  Example: `wbh.feedback("Script executed successfully!")`
 
 ### Commands and Chat
 - **`command(command: String)`**
   Executes a Minecraft command.
-  Example: `command("/gamemode creative")`
+  Example: `wbh.command("/gamemode creative")`
 
 - **`chat(message: String)`**
   Sends a chat message.
-  Example: `chat("Hello, Minecraft!")`
+  Example: `wbh.chat("Hello, Minecraft!")`
 
 ### Inventory Management
-- **`isItemInSlot(slot: Int, item: String): Boolean`**
-  Checks if a specific item is in the given inventory slot.
-  Example: `if (isItemInSlot(0, "Diamond")) { info("Diamond found in slot 0!") }`
+- **`isItemInSlot(slot: Int, item: String, where: String): Boolean`**
+  Checks if a specific item is in the given slot. The `where` parameter can be `"inventory"` (player inventory) or `"container"` (open container).
+  Example: `if (wbh.isItemInSlot(0, "Diamond", "inventory")) { wbh.info("Diamond found in slot 0!") }`
 
 - **`getOpenContainer(): String`**
   Returns the type of the currently open container.
-  Example: `info("Open container: ${getOpenContainer()}")`
+  Example: `wbh.info("Open container: ${wbh.getOpenContainer()}")`
 
-- **`click(slot: Int, button: Int)`**
-  Clicks a slot in the currently open container.
-  Example: `click(0, 0)` (Left-clicks the first slot)
+- **`clickSlot(slot: Int, button: Int, where: String)`**
+  Clicks a slot in the specified location (`"inventory"` or `"container"`).
+  Example: `wbh.clickSlot(0, 0, "container")` (Left-clicks the first slot in the container)
 
-- **`moveItem(sourceSlot: Int, destinationSlot: Int)`**
-  Moves an item from one slot to another.
-  Example: `moveItem(0, 1)` (Moves item from slot 0 to slot 1)
+- **`moveItem(sourceSlot: Int, destinationSlot: Int, where: String)`**
+  Moves an item from one slot to another in the specified location (`"inventory"` or `"container"`).
+  Example: `wbh.moveItem(0, 1, "inventory")` (Moves item from slot 0 to slot 1 in the player inventory)
 
-- **`moveItem(sourceSlot: Int, destinationSlot: Int, simulate: Boolean)`**
+- **`moveItem(sourceSlot: Int, destinationSlot: Int, where: String, simulate: Boolean)`**
   Moves an item from one slot to another, optionally simulating the action.
-  Example: `moveItem(0, 1, true)` (Simulates moving the item)
+  Example: `wbh.moveItem(0, 1, "inventory", true)` (Simulates moving the item in the player inventory)
 
-- **`dropStack(slot: Int)`**
-  Drops the stack in the specified slot.
-  Example: `dropStack(0)` (Drops the item in slot 0)
+- **`dropStack(slot: Int, where: String)`**
+  Drops the stack in the specified slot (`"inventory"` or `"container"`).
+  Example: `wbh.dropStack(0, "inventory")` (Drops the item in slot 0 of the player inventory)
 
-- **`getInventoryItems(): List<ItemStack>`**
-  Returns a list of items in the player's inventory.
-  Example: `getInventoryItems().forEach { info("Item: ${getItemName(it)}") }`
+- **`getItems(where: String): List<ItemStack>`**
+  Returns a list of items in the specified location (`"inventory"` or `"container"`).
+  Example: `wbh.getItems("inventory").forEach { wbh.info("Item: ${wbh.getItemName(it)}") }`
 
 ### Item Data
 - **`getItemName(stack: ItemStack): String`**
   Returns the name of the item stack.
-  Example: `info("Item name: ${getItemName(stack)}")`
+  Example: `wbh.info("Item name: ${wbh.getItemName(stack)}")`
 
 - **`getItemCount(stack: ItemStack): Int`**
   Returns the count of items in the stack.
-  Example: `info("Item count: ${getItemCount(stack)}")`
+  Example: `wbh.info("Item count: ${wbh.getItemCount(stack)}")`
 
 - **`getMaxItemCount(stack: ItemStack): Int`**
   Returns the maximum stack size for the item.
-  Example: `info("Max stack size: ${getMaxItemCount(stack)}")`
+  Example: `wbh.info("Max stack size: ${wbh.getMaxItemCount(stack)}")`
 
 - **`getItemDamage(stack: ItemStack): Int`**
   Returns the damage value of the item.
-  Example: `info("Item damage: ${getItemDamage(stack)}")`
+  Example: `wbh.info("Item damage: ${wbh.getItemDamage(stack)}")`
 
 - **`getItemMaxDamage(stack: ItemStack): Int`**
   Returns the maximum damage value of the item.
-  Example: `info("Max item damage: ${getItemMaxDamage(stack)}")`
+  Example: `wbh.info("Max item damage: ${wbh.getItemMaxDamage(stack)}")`
+
+- **`getItem(slot: Int, where: String): ItemStack`**
+  Returns the item in the specified slot (`"inventory"` or `"container"`).
+  Example: `val item = wbh.getItem(0, "inventory")`
 
 ### Utilities
 - **`delay(duration: Long)`**
   Pauses the script for the specified duration (in milliseconds).
-  Example: `delay(1000)` (Pauses for 1 second)
+  Example: `wbh.delay(1000)` (Pauses for 1 second)
 
 ## Example Script
 
@@ -99,15 +103,15 @@ wbh.info("Starting script...")
 // Send a chat message
 wbh.chat("Hello, Minecraft!")
 
-// Check if a diamond is in slot 0
-if (wbh.isItemInSlot(0, "Diamond")) {
+// Check if a diamond is in slot 0 of the player inventory
+if (wbh.isItemInSlot(0, "Diamond", "inventory")) {
     wbh.feedback("Diamond found in slot 0!")
 } else {
     wbh.feedback("No diamond in slot 0.")
 }
 
-// Move an item from slot 0 to slot 1
-wbh.moveItem(0, 1)
+// Move an item from slot 0 to slot 1 in the player inventory
+wbh.moveItem(0, 1, "inventory")
 
 // Pause for 2 seconds
 wbh.delay(2000)
@@ -117,4 +121,3 @@ wbh.feedback("Open container: ${wbh.getOpenContainer()}")
 
 // Display feedback in-game
 wbh.feedback("Script executed successfully!")
-```
