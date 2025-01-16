@@ -146,8 +146,8 @@ tasks {
     }
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_22
+        targetCompatibility = JavaVersion.VERSION_22
 
         if (System.getenv("CI")?.toBoolean() == true) {
             withSourcesJar()
@@ -156,7 +156,7 @@ tasks {
     }
 
     withType<JavaCompile> {
-        options.release = 21
+        options.release = 22
     }
 
     shadowJar {
