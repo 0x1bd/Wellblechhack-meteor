@@ -27,6 +27,7 @@ public class Tabs {
         add(new FriendsTab());
         add(new MacrosTab());
         add(new ProfilesTab());
+        add(new ScriptsTab());
 
         if (PathManagers.get().getSettings().get().sizeGroups() > 0) {
             add(new PathManagerTab());

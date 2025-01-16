@@ -42,6 +42,7 @@ public class GuiRenderer {
     public static GuiTexture EDIT;
     public static GuiTexture RESET;
     public static GuiTexture FAVORITE_NO, FAVORITE_YES;
+    public static GuiTexture FOLDER;
 
     public GuiTheme theme;
 
@@ -74,6 +75,7 @@ public class GuiRenderer {
         RESET = addTexture(MeteorClient.identifier("textures/icons/gui/reset.png"));
         FAVORITE_NO = addTexture(MeteorClient.identifier("textures/icons/gui/favorite_no.png"));
         FAVORITE_YES = addTexture(MeteorClient.identifier("textures/icons/gui/favorite_yes.png"));
+        FOLDER = addTexture(MeteorClient.identifier("textures/icons/gui/folder.png"));
 
         TEXTURE = TEXTURE_PACKER.pack();
     }

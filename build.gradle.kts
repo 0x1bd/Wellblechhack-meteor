@@ -97,6 +97,10 @@ dependencies {
     library("io.netty:netty-codec-socks:${properties["netty_version"] as String}") { isTransitive  = false }
     library("de.florianmichael:WaybackAuthLib:${properties["waybackauthlib_version"] as String}")
 
+    library("org.jetbrains.kotlin:kotlin-scripting-common:2.1.0")
+    library("org.jetbrains.kotlin:kotlin-scripting-jsr223:2.1.0")
+    library("org.jetbrains.kotlin:kotlin-script-runtime:2.1.0")
+
     // Launch sub project
     shadow(project(":launch"))
 }
