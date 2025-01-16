@@ -133,7 +133,7 @@ public class ScriptsTab extends Tab {
                     if (!script.file.exists()) {
                         try {
                             script.file.createNewFile();
-                            Files.write(script.file.toPath(), "wbh.info(\"Hello, World!\")".getBytes(StandardCharsets.UTF_8));
+                            Files.write(script.file.toPath(), "lib.info(\"Hello, World!\")".getBytes(StandardCharsets.UTF_8));
                         } catch (IOException e) {
                             MeteorClient.LOG.error("Failed to create script file {}", String.valueOf(e));
                         }
