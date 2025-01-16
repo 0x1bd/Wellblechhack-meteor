@@ -94,7 +94,6 @@ public class Script implements ISerializable<Script> {
 
         load(file);
         MeteorClient.LOG.info("Reloaded script: {}", file.getName());
-        stdLib.info("Reloaded script: " + Colors.YELLOW + file.getName());
     }
 
     @Override
