@@ -95,27 +95,50 @@ The WBH standard library (stdLib) provides a set of utility functions. All funct
 ## Example Script
 
 ```kotlin
-// Log a message
+// Log the start of the script
 wbh.info("Starting script...")
 
-// Send a chat message
+// Send a chat message to the server
 wbh.chat("Hello, Minecraft!")
 
-// Check if a diamond is in slot 0 of the player inventory
+// Check if a Diamond is in slot 0 of the player's inventory
 if (wbh.isItemInSlot(0, "Diamond", "inventory")) {
-    wbh.feedback("Diamond found in slot 0!")
+    wbh.feedback("Diamond found in player inventory!")
 } else {
-    wbh.feedback("No diamond in slot 0.")
+    wbh.feedback("No diamond in player inventory.")
 }
 
-// Move an item from slot 0 to slot 1 in the player inventory
-wbh.moveItem(0, 1, "inventory")
+// Check if Sand is in slot 1 of the player's inventory
+if (wbh.isItemInSlot(1, "Sand", "inventory")) {
+    wbh.feedback("Sand found in player inventory!")
+} else {
+    wbh.feedback("No sand in player inventory.")
+}
 
-// Pause for 2 seconds
-wbh.delay(2000)
+// Get the type of the currently open container
+val containerType = wbh.getOpenContainer()
+wbh.feedback("Open container: $containerType")
 
-// Log the open container type
-wbh.feedback("Open container: ${wbh.getOpenContainer()}")
+// Get the item in slot 0 of the open container
+val containerItem = wbh.getItem(0, "container")
+wbh.feedback("Container item in slot 0: ${wbh.getItemName(containerItem)} (Count: ${wbh.getItemCount(containerItem)})")
 
-// Display feedback in-game
-wbh.feedback("Script executed successfully!")
+// Get the item in slot 9 of the player's inventory (first row, last slot)
+val playerItem = wbh.getItem(9, "inventory")
+wbh.feedback("Player item in slot 9: ${wbh.getItemName(playerItem)} (Count: ${wbh.getItemCount(playerItem)})")
+
+// Get the item in the player's helmet slot (slot 39)
+val helmetItem = wbh.getItem(39, "inventory")
+wbh.feedback("Player helmet: ${wbh.getItemName(helmetItem)} (Damage: ${wbh.getItemDamage(helmetItem)}/${wbh.getItemMaxDamage(helmetItem)})")
+
+// Get the item in the player's chestplate slot (slot 38)
+val chestplateItem = wbh.getItem(38, "inventory")
+wbh.feedback("Player chestplate: ${wbh.getItemName(chestplateItem)} (Damage: ${wbh.getItemDamage(chestplateItem)}/${wbh.getItemMaxDamage(chestplateItem)})")
+
+// Get the item in the player's offhand slot (slot 40)
+val offhandItem = wbh.getItem(40, "inventory")
+wbh.feedback("Player offhand: ${wbh.getItemName(offhandItem)} (Count: ${wbh.getItemCount(offhandItem)})")
+
+// Click slot 0 in the open container with left mouse button (button 0)
+wbh.clickSlot(0, 0, "container")
+```
