@@ -8,21 +8,16 @@ The WBH standard library (stdLib) provides a set of utility functions. All funct
 
 ### Logging
 - **`info(message: String)`**
-  Logs an informational message to the console.
+  Logs an informational message to the console and minecraft client side chat. Color: White
   Example: `wbh.info("Hello, World!")`
 
 - **`warn(message: String)`**
-  Logs a warning message to the console.
+  Logs a warning message to the console and minecraft client side chat. Color: Yellow
   Example: `wbh.warn("This is a warning!")`
 
 - **`error(message: String)`**
-  Logs an error message to the console.
+  Logs an error message to the console and minecraft client side chat. Color: Red
   Example: `wbh.error("Something went wrong!")`
-
-### In-Game Feedback
-- **`feedback(message: String)`**
-  Displays a message in the in-game chat HUD.
-  Example: `wbh.feedback("Script executed successfully!")`
 
 ### Commands and Chat
 - **`command(command: String)`**
