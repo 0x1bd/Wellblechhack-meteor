@@ -27,7 +27,7 @@ The WBH standard library (stdLib) provides a set of utility functions. All funct
 ### Commands and Chat
 - **`command(command: String)`**
   Executes a Minecraft command.
-  Example: `wbh.command("/gamemode creative")`
+  Example: `wbh.command("gamemode creative")`
 
 - **`chat(message: String)`**
   Sends a chat message.
