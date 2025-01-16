@@ -36,7 +36,9 @@ To run your script, either press the keybind or enter `.scripts run <name>` in t
 
 ### Helping Images
 These are images designed to display the slot IDs of the different containers.
+<br>
 ![generic slot image](./doc/slots/generic.png)
+<br>
 Note that offhand, 2x2 crafting and armor slots can **only** be accessed while in inventory or no screen at all.
 The following table shows all _special_ slots:
 
