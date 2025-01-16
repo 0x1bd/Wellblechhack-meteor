@@ -5,12 +5,12 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Colors;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Objects;
 
 public class Script implements ISerializable<Script> {
@@ -56,6 +56,8 @@ public class Script implements ISerializable<Script> {
         MeteorClient.LOG.info("Loaded script: {}", file.getName());
     }
 
+    private ScriptingStandardLibrary stdLib = new ScriptingStandardLibrary();
+
     public void run() {
         if (file == null) {
             MeteorClient.LOG.error("No script loaded to execute.");
@@ -67,17 +69,17 @@ public class Script implements ISerializable<Script> {
             ScriptEngine engine = manager.getEngineByName("kotlin");
 
             if (engine == null) {
-                MeteorClient.LOG.error("Kotlin script engine not found.");
+                stdLib.error("Kotlin script engine not found.");
                 return;
             }
 
-            ScriptingStandardLibrary stdLib = new ScriptingStandardLibrary();
             engine.put("wbh", stdLib);
 
             try (FileReader reader = new FileReader(file)) {
                 engine.eval(reader);
                 MeteorClient.LOG.info("Executed script: {}", file.getName());
             } catch (Exception e) {
+                stdLib.error("Failed to execute script " + file.getName() + ": " + e.getMessage());
                 MeteorClient.LOG.error("Failed to execute script {}: {}", file.getName(), e.getMessage(), e);
             }
         }).start();
@@ -86,11 +88,13 @@ public class Script implements ISerializable<Script> {
     public void reload() {
         if (file == null) {
             MeteorClient.LOG.error("No script loaded to reload.");
+            stdLib.error("No script loaded to reload.");
             return;
         }
 
         load(file);
         MeteorClient.LOG.info("Reloaded script: {}", file.getName());
+        stdLib.info("Reloaded script: " + Colors.YELLOW + file.getName());
     }
 
     @Override

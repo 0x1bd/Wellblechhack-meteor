@@ -15,6 +15,8 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 
 import java.util.List;
@@ -23,19 +25,15 @@ import java.util.Objects;
 public class ScriptingStandardLibrary {
 
     public void info(String message) {
-        MeteorClient.LOG.info(message);
+        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal(message).formatted(Formatting.WHITE));
     }
 
     public void warn(String message) {
-        MeteorClient.LOG.warn(message);
+        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal(message).formatted(Formatting.YELLOW));
     }
 
     public void error(String message) {
-        MeteorClient.LOG.error(message);
-    }
-
-    public void feedback(String message) {
-        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal(message));
+        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal(message).formatted(Formatting.RED));
     }
 
     public void command(String command) {
