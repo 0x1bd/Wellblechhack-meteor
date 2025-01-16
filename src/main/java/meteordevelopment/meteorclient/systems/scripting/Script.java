@@ -4,6 +4,7 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.Keybind;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Colors;
@@ -83,7 +84,8 @@ public class Script implements ISerializable<Script> {
                 return;
             }
 
-            engine.put("wbh", stdLib);
+            engine.put("lib", stdLib);
+            engine.put("mc", MinecraftClient.getInstance());
 
             try (FileReader reader = new FileReader(file)) {
                 engine.eval(reader);

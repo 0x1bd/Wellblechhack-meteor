@@ -10,12 +10,11 @@ import meteordevelopment.meteorclient.utils.player.SlotUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.*;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 
@@ -24,162 +23,125 @@ import java.util.Objects;
 
 public class ScriptingStandardLibrary {
 
+    private final MinecraftClient client = MinecraftClient.getInstance();
+
+    // ======================
+    // Logging to Chat HUD
+    // ======================
     public void info(String message) {
-        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal(message).formatted(Formatting.WHITE));
+        Objects.requireNonNull(client.inGameHud.getChatHud()).addMessage(Text.literal(message).formatted(Formatting.WHITE));
     }
 
     public void warn(String message) {
-        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal(message).formatted(Formatting.YELLOW));
+        Objects.requireNonNull(client.inGameHud.getChatHud()).addMessage(Text.literal(message).formatted(Formatting.YELLOW));
     }
 
     public void error(String message) {
-        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal(message).formatted(Formatting.RED));
+        Objects.requireNonNull(client.inGameHud.getChatHud()).addMessage(Text.literal(message).formatted(Formatting.RED));
     }
 
+    // =====================
+    // Command and Chat
+    // =====================
     public void command(String command) {
-        Objects.requireNonNull(MinecraftClient.getInstance().getNetworkHandler()).sendCommand(command);
+        Objects.requireNonNull(client.getNetworkHandler()).sendCommand(command);
     }
 
     public void chat(String message) {
-        Objects.requireNonNull(MinecraftClient.getInstance().getNetworkHandler()).sendChatMessage(message);
+        Objects.requireNonNull(client.getNetworkHandler()).sendChatMessage(message);
     }
 
+    // =====================
+    // Inventory and Slots
+    // =====================
     public boolean isItemInSlot(int slot, String item, String where) {
-        Objects.requireNonNull(MinecraftClient.getInstance().player);
+        Objects.requireNonNull(client.player);
 
-        if (where.equalsIgnoreCase("inventory")) {
-            return MinecraftClient.getInstance().player.getInventory().getStack(slot).getItem().getName().getString().equalsIgnoreCase(item);
-        } else if (where.equalsIgnoreCase("container")) {
-            return MinecraftClient.getInstance().player.currentScreenHandler.slots.get(slot).getStack().getItem().getName().getString().equalsIgnoreCase(item);
-        } else {
-            throw new IllegalArgumentException("Invalid 'where' parameter. Must be 'inventory' or 'container'.");
-        }
+        ItemStack stack = getItem(slot, where);
+        return stack.getItem().getName().getString().equalsIgnoreCase(item);
     }
 
     public String getOpenContainer() {
-        Screen screen = MinecraftClient.getInstance().currentScreen;
+        Screen screen = client.currentScreen;
         if (screen == null) return "none";
+
         return switch (screen) {
-            case GenericContainerScreen genericContainerScreen -> "generic";
-            case ShulkerBoxScreen shulkerBoxScreen -> "shulker";
-            case FurnaceScreen furnaceScreen -> "furnace";
-            case HopperScreen hopperScreen -> "hopper";
-            case AnvilScreen anvilScreen -> "anvil";
-            case CrafterScreen crafterScreen -> "crafter";
-            case CraftingScreen craftingScreen -> "crafting";
-            case Generic3x3ContainerScreen generic3x3ContainerScreen -> "generic3x3";
-            case InventoryScreen inventoryScreen -> "inventory";
-            case GrindstoneScreen grindstoneScreen -> "grindstone";
-            case LecternScreen lecternScreen -> "lectern";
-            case LoomScreen loomScreen -> "loom";
-            case SignEditScreen signEditScreen -> "sign";
-            case JigsawBlockScreen jigsawBlockScreen -> "jigsaw";
-            case CommandBlockScreen commandBlockScreen -> "commandblock";
-            case StructureBlockScreen structureBlockScreen -> "structureblock";
-            case StonecutterScreen stonecutterScreen -> "stonecutter";
-            case HandledScreen<?> handledScreen -> "other";
+            case GenericContainerScreen ignored -> "generic";
+            case ShulkerBoxScreen ignored -> "shulker";
+            case FurnaceScreen ignored -> "furnace";
+            case HopperScreen ignored -> "hopper";
+            case AnvilScreen ignored -> "anvil";
+            case CrafterScreen ignored -> "crafter";
+            case CraftingScreen ignored -> "crafting";
+            case Generic3x3ContainerScreen ignored -> "generic3x3";
+            case InventoryScreen ignored -> "inventory";
+            case GrindstoneScreen ignored -> "grindstone";
+            case LecternScreen ignored -> "lectern";
+            case LoomScreen ignored -> "loom";
+            case SignEditScreen ignored -> "sign";
+            case JigsawBlockScreen ignored -> "jigsaw";
+            case CommandBlockScreen ignored -> "commandblock";
+            case StructureBlockScreen ignored -> "structureblock";
+            case StonecutterScreen ignored -> "stonecutter";
+            case HandledScreen<?> ignored -> "other";
             default -> "none";
         };
     }
 
     public void clickSlot(int slot, int button, String where) {
-        Objects.requireNonNull(MinecraftClient.getInstance().player);
-        Objects.requireNonNull(MinecraftClient.getInstance().interactionManager);
+        Objects.requireNonNull(client.player);
+        Objects.requireNonNull(client.interactionManager);
 
-        if (where.equalsIgnoreCase("inventory")) {
-            MinecraftClient.getInstance().interactionManager.clickSlot(
-                MinecraftClient.getInstance().player.currentScreenHandler.syncId,
-                SlotUtils.indexToId(slot),
-                button,
-                SlotActionType.PICKUP,
-                MinecraftClient.getInstance().player
-            );
-        } else if (where.equalsIgnoreCase("container")) {
-            MinecraftClient.getInstance().player.currentScreenHandler.onSlotClick(
-                slot,
-                button,
-                SlotActionType.PICKUP,
-                MinecraftClient.getInstance().player
-            );
-        } else {
+        boolean isInventory = where.equalsIgnoreCase("inventory");
+        boolean isContainer = where.equalsIgnoreCase("container");
+
+        if (!isInventory && !isContainer) {
             throw new IllegalArgumentException("Invalid 'where' parameter. Must be 'inventory' or 'container'.");
         }
+
+        int syncId = client.player.currentScreenHandler.syncId;
+        int slotId = isInventory ? SlotUtils.indexToId(slot) : slot;
+
+        if (!validateSlot(client.player, slotId)) {
+            throw new IllegalArgumentException("Invalid slot index: " + slot);
+        }
+
+        client.interactionManager.clickSlot(syncId, slotId, button, SlotActionType.PICKUP, client.player);
     }
 
     public void moveItem(int sourceSlot, int destinationSlot, String where) {
-        moveItem(sourceSlot, destinationSlot, where, false, () -> dropStack(destinationSlot, where));
-    }
+        Objects.requireNonNull(client.player);
 
-    public void moveItem(int sourceSlot, int destinationSlot, String where, boolean simulate) {
-        moveItem(sourceSlot, destinationSlot, where, simulate, () -> dropStack(destinationSlot, where));
-    }
-
-    public void moveItem(int sourceSlot, int destinationSlot, String where, boolean simulate, Runnable replaceAction) {
-        MinecraftClient client = MinecraftClient.getInstance();
-
-        if (where.equalsIgnoreCase("inventory")) {
-            if (!Objects.requireNonNull(client.player).getInventory().getStack(destinationSlot).isEmpty()) {
-                replaceAction.run();
-            }
-        } else if (where.equalsIgnoreCase("container")) {
-            if (!Objects.requireNonNull(client.player).currentScreenHandler.slots.get(destinationSlot).getStack().isEmpty()) {
-                replaceAction.run();
-            }
-        } else {
-            throw new IllegalArgumentException("Invalid 'where' parameter. Must be 'inventory' or 'container'.");
+        if (!isSlotEmpty(destinationSlot, where)) {
+            dropStack(destinationSlot, true, where);
         }
 
         clickSlot(sourceSlot, 0, where);
         clickSlot(destinationSlot, 0, where);
-
-        if (simulate) {
-            client.player.networkHandler.sendPacket(new CloseHandledScreenC2SPacket(client.player.playerScreenHandler.syncId));
-        }
     }
 
-    public void dropStack(int slot, String where) {
-        MinecraftClient client = MinecraftClient.getInstance();
-
+    public void dropStack(int slot, boolean wholeStack, String where) {
         Objects.requireNonNull(client.player).swingHand(Hand.MAIN_HAND);
 
-        if (where.equalsIgnoreCase("inventory")) {
-            Objects.requireNonNull(client.interactionManager).clickSlot(
-                client.player.currentScreenHandler.syncId,
-                SlotUtils.indexToId(slot),
-                0,
-                SlotActionType.THROW,
-                client.player
-            );
-        } else if (where.equalsIgnoreCase("container")) {
-            Objects.requireNonNull(client.interactionManager).clickSlot(
-                client.player.currentScreenHandler.syncId,
-                slot,
-                0,
-                SlotActionType.THROW,
-                client.player
-            );
-        } else {
-            throw new IllegalArgumentException("Invalid 'where' parameter. Must be 'inventory' or 'container'.");
-        }
+        int syncId = client.player.currentScreenHandler.syncId;
+        int slotId = where.equalsIgnoreCase("inventory") ? SlotUtils.indexToId(slot) : slot;
+
+        Objects.requireNonNull(client.interactionManager).clickSlot(syncId, slotId, wholeStack ? 1 : 0, SlotActionType.THROW, client.player);
     }
 
     public List<ItemStack> getItems(String where) {
-        MinecraftClient client = MinecraftClient.getInstance();
-
         if (where.equalsIgnoreCase("inventory")) {
-            if (client.player.getInventory() == null) return List.of();
-            return client.player.getInventory().main;
+            return Objects.requireNonNull(client.player).getInventory().main;
         } else if (where.equalsIgnoreCase("container")) {
-            if (client.player.currentScreenHandler == null) return List.of();
-            return client.player.currentScreenHandler.slots.stream().map(Slot::getStack).toList();
+            return Objects.requireNonNull(client.player.currentScreenHandler).slots.stream().map(Slot::getStack).toList();
         } else {
             throw new IllegalArgumentException("Invalid 'where' parameter. Must be 'inventory' or 'container'.");
         }
     }
 
-    // =========
-    // Item Data
-    // =========
+    // =================
+    // Item Data Helpers
+    // =================
     public String getItemName(ItemStack stack) {
         return stack.getName().getString();
     }
@@ -188,31 +150,36 @@ public class ScriptingStandardLibrary {
         return stack.getCount();
     }
 
-    public int getMaxItemCount(ItemStack stack) {
-        return stack.getMaxCount();
-    }
-
-    public int getItemDamage(ItemStack stack) {
-        return stack.getDamage();
-    }
-
-    public int getItemMaxDamage(ItemStack stack) {
-        return stack.getMaxDamage();
-    }
-
     public ItemStack getItem(int slot, String where) {
-        MinecraftClient client = MinecraftClient.getInstance();
-
         if (where.equalsIgnoreCase("inventory")) {
-            return client.player.getInventory().getStack(slot);
+            return Objects.requireNonNull(client.player).getInventory().getStack(slot);
         } else if (where.equalsIgnoreCase("container")) {
-            return client.player.currentScreenHandler.slots.get(slot).getStack();
+            return Objects.requireNonNull(client.player.currentScreenHandler).slots.get(slot).getStack();
         } else {
             throw new IllegalArgumentException("Invalid 'where' parameter. Must be 'inventory' or 'container'.");
         }
     }
 
-    public void delay(long duration) throws InterruptedException {
-        Thread.sleep(duration);
+    public int getFirstSlotFromStack(ItemStack stack, String where) {
+        List<ItemStack> items = getItems(where);
+
+        for (int i = 0; i < items.size(); i++) {
+            if (ItemStack.areEqual(stack, items.get(i))) {
+                return i;
+            }
+        }
+
+        return -1; // Return -1 if the item is not found
+    }
+
+    public boolean isSlotEmpty(int slot, String where) {
+        return getItem(slot, where).isEmpty();
+    }
+
+    // ===========
+    // Validation
+    // ===========
+    private boolean validateSlot(ClientPlayerEntity player, int slot) {
+        return slot >= 0 && slot < player.currentScreenHandler.slots.size();
     }
 }

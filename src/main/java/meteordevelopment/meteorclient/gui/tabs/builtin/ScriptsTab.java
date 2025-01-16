@@ -19,6 +19,7 @@ import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.systems.scripting.Script;
 import meteordevelopment.meteorclient.systems.scripting.Scripts;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.Util;
 import oshi.util.FileUtil;
 
 import javax.swing.*;
@@ -78,30 +79,8 @@ public class ScriptsTab extends Tab {
                 WButton folder = table.add(theme.button(GuiRenderer.FOLDER)).widget();
                 folder.action = () -> {
                     try {
-                        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-                            // If a graphical environment is available, use Desktop to open the file
-                            Desktop.getDesktop().open(script.file);
-                        } else {
-                            // If no graphical environment is available, use platform-specific commands
-                            String os = System.getProperty("os.name").toLowerCase();
-                            ProcessBuilder processBuilder;
-
-                            if (os.contains("win")) {
-                                // Windows
-                                processBuilder = new ProcessBuilder("cmd.exe", "/c", "start", script.file.getAbsolutePath());
-                            } else if (os.contains("mac")) {
-                                // macOS
-                                processBuilder = new ProcessBuilder("open", script.file.getAbsolutePath());
-                            } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-                                // Linux/Unix
-                                processBuilder = new ProcessBuilder("xdg-open", script.file.getAbsolutePath());
-                            } else {
-                                throw new UnsupportedOperationException("Unsupported operating system: " + os);
-                            }
-
-                            processBuilder.start();
-                        }
-                    } catch (IOException | UnsupportedOperationException e) {
+                        Util.getOperatingSystem().open(script.file);
+                    } catch (UnsupportedOperationException e) {
                         MeteorClient.LOG.error("Failed to open script file {}", String.valueOf(e));
                     }
                 };
