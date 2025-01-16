@@ -7,6 +7,7 @@ You can also ```
 with(lib) {
     // code here
 } ``` to avoid prefixing everything with `lib`.
+You can also access any object that is accessible from `MinecraftClient.getInstance()`. To do that, use `mc`.
 
 ## Available Functions
 
@@ -72,4 +73,9 @@ with(lib) {
         dropStack(getFirstSlotFromStack(item, "inventory"), true, "inventory")
     }
 }
+```
+
+Sending a chat message using direct `mc` object:
+```kotlin
+mc.getNetworkHandler()?.sendChatMessage("Hello, World!")
 ```
