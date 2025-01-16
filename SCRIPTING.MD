@@ -4,7 +4,7 @@ Wellblechhack provides a way of creating custom scripts using kotlin-scripting.
 Use the ingame "Scripts" tab to create, run and edit scripts.
 The WBH standard library (stdLib) provides a set of utility functions. All functions need to be prefixed with `wbh.`.
 
-The `ScriptingStandardLibrary` provides a set of utility functions for interacting with Minecraft and logging messages in Meteor Client scripts. This library is automatically available in scripts, and its functions can be called directly.
+The `ScriptingStandardLibrary` provides a set of utility functions for interacting with Minecraft in Kotlin scripts. This library is automatically available in all scripts, and its functions can be called directly.
 
 ## Available Functions
 
