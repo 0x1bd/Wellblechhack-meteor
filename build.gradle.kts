@@ -47,6 +47,9 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
+    maven {
+        url = uri("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
+    }
 }
 
 val modInclude: Configuration by configurations.creating
@@ -84,6 +87,9 @@ dependencies {
     modCompileOnly("maven.modrinth:iris:${properties["iris_version"] as String}") { isTransitive  = false }
     modCompileOnly("com.viaversion:viafabricplus:${properties["viafabricplus_version"] as String}") { isTransitive  = false }
     modCompileOnly("com.viaversion:viafabricplus-api:${properties["viafabricplus_version"] as String}") { isTransitive  = false }
+
+    // Devauth
+    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
 
     // Baritone (https://github.com/MeteorDevelopment/baritone)
     modCompileOnly("meteordevelopment:baritone:${properties["baritone_version"] as String}-SNAPSHOT")

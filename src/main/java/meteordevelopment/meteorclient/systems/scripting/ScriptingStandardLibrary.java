@@ -182,4 +182,11 @@ public class ScriptingStandardLibrary {
     private boolean validateSlot(ClientPlayerEntity player, int slot) {
         return slot >= 0 && slot < player.currentScreenHandler.slots.size();
     }
+
+    // ===========
+    // Utilities
+    // ===========
+    public void delay(long duration) throws InterruptedException {
+        Thread.sleep(duration);
+    }
 }
