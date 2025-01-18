@@ -42,6 +42,8 @@ These are images designed to display the slot IDs of the different containers.
 ![generic slot image](./doc/slots/generic.png)
 <br>
 
+![generic slot image 2](./doc/slots/generic_double.png)
+
 ### Note
 Offhand, 2x2 crafting and armor slots can **only** be accessed while the inventory is open or no screen is open at all.
 The following table shows all _special_ slots:
